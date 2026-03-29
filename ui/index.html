@@ -249,20 +249,47 @@
         const form = document.getElementById("ttsForm");
 
         const fallbackProfiles = [
-            { id: "default", label: "Natural", voice: "en-US-AriaNeural", speed: "+0%", pitch: "+0Hz", volume: "+0%" },
-            { id: "clear_female", label: "Clear Female", voice: "en-US-AriaNeural", speed: "-5%", pitch: "+0Hz", volume: "+0%" },
-            { id: "clear_male", label: "Clear Male", voice: "en-US-GuyNeural", speed: "-3%", pitch: "+0Hz", volume: "+0%" }
+            { id: "default", label: "Natural", speed: "+0%", pitch: "+0Hz", volume: "+0%" },
+            { id: "clear_female", label: "Clear Female", speed: "-5%", pitch: "+0Hz", volume: "+0%" },
+            { id: "clear_male", label: "Clear Male", speed: "-3%", pitch: "+0Hz", volume: "+0%" },
+            { id: "girl_child", label: "Child Girl", speed: "+18%", pitch: "+12Hz", volume: "+3%" },
+            { id: "boy_child", label: "Child Boy", speed: "+10%", pitch: "+8Hz", volume: "+2%" }
         ];
 
         const fallbackVoices = [
             { name: "en-US-AriaNeural", gender: "Female", locale: "en-US" },
             { name: "en-US-GuyNeural", gender: "Male", locale: "en-US" },
             { name: "pt-BR-FranciscaNeural", gender: "Female", locale: "pt-BR" },
-            { name: "pt-BR-AntonioNeural", gender: "Male", locale: "pt-BR" }
+            { name: "pt-BR-AntonioNeural", gender: "Male", locale: "pt-BR" },
+            { name: "pt-BR-ThalitaNeural", gender: "Female", locale: "pt-BR" },
+            { name: "es-ES-ElviraNeural", gender: "Female", locale: "es-ES" },
+            { name: "es-ES-AlvaroNeural", gender: "Male", locale: "es-ES" },
+            { name: "fr-FR-DeniseNeural", gender: "Female", locale: "fr-FR" },
+            { name: "fr-FR-HenriNeural", gender: "Male", locale: "fr-FR" },
+            { name: "de-DE-KatjaNeural", gender: "Female", locale: "de-DE" },
+            { name: "de-DE-ConradNeural", gender: "Male", locale: "de-DE" },
+            { name: "ja-JP-NanamiNeural", gender: "Female", locale: "ja-JP" },
+            { name: "ja-JP-KeitaNeural", gender: "Male", locale: "ja-JP" }
         ];
+
+        const localeDisplayNames = {
+            "pt-BR": "Portuguese (Brazil)",
+            "en-US": "English (US)",
+            "es-ES": "Spanish (Spain)",
+            "fr-FR": "French (France)",
+            "de-DE": "German (Germany)",
+            "ja-JP": "Japanese (Japan)"
+        };
 
         let currentAudioUrl = null;
         let profiles = fallbackProfiles;
+
+        function friendlyVoiceLabel(item) {
+            const localeLabel = localeDisplayNames[item.locale] || item.locale || "Voice";
+            const shortName = (item.name || "").split("-").pop().replace(/Neural$/, "");
+            const genderLabel = item.gender ? ` - ${item.gender}` : "";
+            return `${localeLabel} - ${shortName}${genderLabel}`;
+        }
 
         function fillProfiles(items) {
             profileSelect.innerHTML = "";
@@ -276,10 +303,15 @@
 
         function fillVoices(items) {
             voiceSelect.innerHTML = "";
+            const seen = new Set();
             items.forEach((item) => {
+                if (!item.name || seen.has(item.name)) {
+                    return;
+                }
+                seen.add(item.name);
                 const option = document.createElement("option");
                 option.value = item.name;
-                option.textContent = `${item.name}${item.gender ? ` (${item.gender})` : ""}`;
+                option.textContent = friendlyVoiceLabel(item);
                 voiceSelect.appendChild(option);
             });
         }
@@ -289,7 +321,6 @@
             if (!profile) {
                 return;
             }
-            voiceSelect.value = profile.voice;
             document.getElementById("speed").value = profile.speed;
             document.getElementById("pitch").value = profile.pitch;
             document.getElementById("volume").value = profile.volume || "+0%";
@@ -378,13 +409,13 @@
                 audioPlayer.play().catch(() => {});
 
                 const outputFile = response.headers.get("X-Output-File") || `audio.${formData.get("output_format")}`;
-                const voice = response.headers.get("X-Voice") || voiceSelect.value;
                 const profile = response.headers.get("X-Profile") || profileSelect.value;
                 const format = response.headers.get("X-Output-Format") || formData.get("output_format");
+                const selectedVoiceText = voiceSelect.options[voiceSelect.selectedIndex]?.textContent || voiceSelect.value;
 
                 downloadBtn.href = currentAudioUrl;
                 downloadBtn.download = outputFile;
-                resultMeta.innerHTML = `File: <code>${outputFile}</code><br>Profile: <code>${profile}</code> | Voice: <code>${voice}</code> | Format: <code>${format}</code>`;
+                resultMeta.innerHTML = `File: <code>${outputFile}</code><br>Profile: <code>${profile}</code> | Voice: <code>${selectedVoiceText}</code> | Format: <code>${format}</code>`;
                 playerPanel.classList.add("active");
 
                 statusBox.className = "status ok";

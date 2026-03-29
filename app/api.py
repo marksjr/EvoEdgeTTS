@@ -32,35 +32,30 @@ if (BIN_DIR / "ffmpeg.exe").exists():
 VOICE_PROFILES = {
     "default": {
         "label": "Natural",
-        "voice": "pt-BR-FranciscaNeural",
         "speed": "+0%",
         "pitch": "+0Hz",
         "volume": "+0%",
     },
     "clear_female": {
         "label": "Clear Female",
-        "voice": "pt-BR-FranciscaNeural",
         "speed": "-5%",
         "pitch": "+0Hz",
         "volume": "+0%",
     },
     "clear_male": {
         "label": "Clear Male",
-        "voice": "pt-BR-AntonioNeural",
         "speed": "-3%",
         "pitch": "+0Hz",
         "volume": "+0%",
     },
     "girl_child": {
         "label": "Child Girl",
-        "voice": "pt-BR-FranciscaNeural",
         "speed": "+18%",
         "pitch": "+12Hz",
         "volume": "+3%",
     },
     "boy_child": {
         "label": "Child Boy",
-        "voice": "pt-BR-AntonioNeural",
         "speed": "+10%",
         "pitch": "+8Hz",
         "volume": "+2%",
@@ -103,10 +98,16 @@ async def list_edge_voices():
 
     supported_langs = ("en-", "de-", "fr-", "ja-", "es-", "pt-")
     target_voices = []
+    seen_names = set()
     for voice in voices:
         short_name = voice.get("ShortName", "")
         locale = voice.get("Locale", "")
-        if locale.startswith(supported_langs) or short_name.startswith(supported_langs):
+        if (
+            (locale.startswith(supported_langs) or short_name.startswith(supported_langs))
+            and short_name
+            and short_name not in seen_names
+        ):
+            seen_names.add(short_name)
             target_voices.append(
                 {
                     "name": short_name,
@@ -264,7 +265,6 @@ async def edge_tts_generate(
 
     profile_cfg = VOICE_PROFILES.get(profile)
     if profile_cfg is not None:
-        voice = profile_cfg["voice"]
         speed = profile_cfg["speed"]
         pitch = profile_cfg["pitch"]
         volume = profile_cfg["volume"]
