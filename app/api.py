@@ -1,6 +1,6 @@
 """
-Edge-TTS API - sintese multi-idiomas via Microsoft Edge.
-Uso: python api.py
+Evo Edge TTS API.
+Usage: python api.py
 API: http://127.0.0.1:8890
 Docs: http://127.0.0.1:8890/docs
 """
@@ -31,35 +31,35 @@ if (BIN_DIR / "ffmpeg.exe").exists():
 
 VOICE_PROFILES = {
     "default": {
-        "label": "Padrao natural",
+        "label": "Natural",
         "voice": "pt-BR-FranciscaNeural",
         "speed": "+0%",
         "pitch": "+0Hz",
         "volume": "+0%",
     },
     "clear_female": {
-        "label": "Feminina clara",
+        "label": "Clear Female",
         "voice": "pt-BR-FranciscaNeural",
         "speed": "-5%",
         "pitch": "+0Hz",
         "volume": "+0%",
     },
     "clear_male": {
-        "label": "Masculina clara",
+        "label": "Clear Male",
         "voice": "pt-BR-AntonioNeural",
         "speed": "-3%",
         "pitch": "+0Hz",
         "volume": "+0%",
     },
     "girl_child": {
-        "label": "Infantil menina",
+        "label": "Child Girl",
         "voice": "pt-BR-FranciscaNeural",
         "speed": "+18%",
         "pitch": "+12Hz",
         "volume": "+3%",
     },
     "boy_child": {
-        "label": "Infantil menino",
+        "label": "Child Boy",
         "voice": "pt-BR-AntonioNeural",
         "speed": "+10%",
         "pitch": "+8Hz",
@@ -135,11 +135,11 @@ async def synthesize_edge_audio(text: str, voice: str, speed: str, pitch: str, v
     except Exception as exc:
         raise HTTPException(
             status_code=503,
-            detail=f"Falha ao conectar no servico Edge-TTS: {exc}",
+            detail=f"Failed to connect to the Edge-TTS service: {exc}",
         ) from exc
 
     if mp3_buf.tell() == 0:
-        raise HTTPException(status_code=500, detail="Edge-TTS nao retornou audio.")
+        raise HTTPException(status_code=500, detail="Edge-TTS did not return audio.")
 
     mp3_buf.seek(0)
     return mp3_buf
@@ -151,7 +151,7 @@ def convert_mp3_to_wav(mp3_buf: io.BytesIO) -> io.BytesIO:
     except Exception as exc:
         raise HTTPException(
             status_code=500,
-            detail=f"Falha ao converter MP3 do Edge-TTS para WAV: {exc}",
+            detail=f"Failed to convert Edge-TTS MP3 to WAV: {exc}",
         ) from exc
 
     wav_buf = io.BytesIO()
@@ -168,7 +168,7 @@ def save_output(audio_bytes: bytes, text: str, output_format: str) -> str:
     return output_filename
 
 
-app = FastAPI(title="Edge-TTS API", version="3.0.0")
+app = FastAPI(title="Evo Edge TTS API", version="3.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -182,17 +182,17 @@ app.add_middleware(
 def root():
     return JSONResponse(
         {
-            "service": "Edge-TTS API",
+            "service": "Evo Edge TTS API",
             "status": "online",
             "version": app.version,
             "engine": "edge-tts",
             "ui_file": str(ROOT_DIR / "ui" / "index.html"),
             "docs_url": f"http://{HOST}:{PORT}/docs",
             "endpoints": {
-                "GET /health": "Status rapido",
-                "GET /edge-tts/voices": "Listar vozes Edge-TTS",
-                "GET /edge-tts/profiles": "Listar perfis prontos",
-                "POST /edge-tts": "Gerar audio via formulario multipart",
+                "GET /health": "Quick status",
+                "GET /edge-tts/voices": "List Edge-TTS voices",
+                "GET /edge-tts/profiles": "List ready-to-use profiles",
+                "POST /edge-tts": "Generate audio via multipart form",
             },
         }
     )
@@ -202,7 +202,7 @@ def root():
 def health():
     return HealthResponse(
         status="ok",
-        service="Edge-TTS API",
+        service="Evo Edge TTS API",
         version=app.version,
         engine="edge-tts",
         host=HOST,
@@ -222,17 +222,17 @@ def list_references():
 
 @app.post("/tts")
 async def text_to_speech_disabled():
-    raise HTTPException(status_code=410, detail="F5-TTS local foi removido. Use /edge-tts.")
+    raise HTTPException(status_code=410, detail="Legacy F5-TTS support was removed. Use /edge-tts.")
 
 
 @app.post("/tts/json")
 async def text_to_speech_json_disabled():
-    raise HTTPException(status_code=410, detail="F5-TTS local foi removido. Use /edge-tts.")
+    raise HTTPException(status_code=410, detail="Legacy F5-TTS support was removed. Use /edge-tts.")
 
 
 @app.post("/upload-reference")
 async def upload_reference_disabled():
-    raise HTTPException(status_code=410, detail="Upload de referencia foi removido com o F5-TTS.")
+    raise HTTPException(status_code=410, detail="Reference upload was removed with F5-TTS.")
 
 
 @app.get("/edge-tts/voices")
@@ -257,10 +257,10 @@ async def edge_tts_generate(
 ):
     clean_text = text.strip()
     if not clean_text:
-        raise HTTPException(status_code=400, detail="Texto vazio.")
+        raise HTTPException(status_code=400, detail="Text cannot be empty.")
 
     if output_format not in SUPPORTED_FORMATS:
-        raise HTTPException(status_code=400, detail="Formato invalido. Use mp3 ou wav.")
+        raise HTTPException(status_code=400, detail="Invalid format. Use mp3 or wav.")
 
     profile_cfg = VOICE_PROFILES.get(profile)
     if profile_cfg is not None:
@@ -309,7 +309,7 @@ async def edge_tts_generate(
 
 if __name__ == "__main__":
     print(f"\n{'=' * 56}")
-    print("  Edge-TTS API")
+    print("  Evo Edge TTS API")
     print(f"  API:  http://{HOST}:{PORT}")
     print(f"  Docs: http://{HOST}:{PORT}/docs")
     print(f"  UI:   {ROOT_DIR / 'ui' / 'index.html'}")

@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edge TTS Portable</title>
+    <title>Evo Edge TTS</title>
     <style>
         * { box-sizing: border-box; }
         :root {
             --bg: #09111f;
             --panel: rgba(12, 27, 48, 0.92);
-            --panel-alt: rgba(9, 20, 37, 0.88);
             --line: #26436a;
             --text: #edf5ff;
             --muted: #97abc8;
@@ -30,7 +29,7 @@
             min-height: 100vh;
         }
         .wrap {
-            max-width: 1080px;
+            width: min(90vw, 1600px);
             margin: 0 auto;
             padding: 28px 18px 40px;
         }
@@ -46,33 +45,14 @@
             margin-bottom: 18px;
         }
         .hero h1 {
-            margin: 0 0 10px;
+            margin: 0;
             font-size: clamp(2rem, 5vw, 3.2rem);
             line-height: 0.95;
             letter-spacing: -0.03em;
         }
-        .hero p {
-            margin: 0;
-            max-width: 760px;
-            line-height: 1.55;
-            color: var(--muted);
-        }
-        .badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 18px;
-        }
-        .badge {
-            background: var(--panel-alt);
-            border: 1px solid var(--line);
-            border-radius: 999px;
-            padding: 8px 14px;
-            font-size: 0.92rem;
-        }
         .grid {
             display: grid;
-            grid-template-columns: 1.3fr 0.9fr;
+            grid-template-columns: 1.5fr 0.8fr;
             gap: 18px;
         }
         .panel {
@@ -105,7 +85,7 @@
             font: inherit;
         }
         textarea {
-            min-height: 240px;
+            min-height: 280px;
             resize: vertical;
             line-height: 1.55;
         }
@@ -131,11 +111,6 @@
             cursor: pointer;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
         }
-        button.secondary, .link-button.secondary {
-            background: rgba(7, 18, 34, 0.95);
-            border: 1px solid var(--line);
-            color: var(--text);
-        }
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -150,14 +125,6 @@
         .status.ok { border-color: rgba(126, 240, 175, 0.35); color: var(--ok); }
         .status.bad { border-color: rgba(255, 157, 178, 0.35); color: var(--bad); }
         .status.warn { border-color: rgba(255, 212, 121, 0.35); color: var(--warn); }
-        .meta {
-            display: grid;
-            gap: 8px;
-            margin-top: 12px;
-            color: var(--muted);
-            font-size: 0.94rem;
-            line-height: 1.5;
-        }
         .player {
             margin-top: 16px;
             display: none;
@@ -171,30 +138,22 @@
             font-family: Consolas, monospace;
             color: var(--text);
         }
-        .mono {
-            word-break: break-all;
-            font-family: Consolas, monospace;
-        }
         @media (max-width: 920px) {
             .grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 640px) {
+            .wrap { width: calc(100vw - 24px); padding: 12px 12px 24px; }
             .cols { grid-template-columns: 1fr; }
             .actions { flex-direction: column; }
             button, .link-button { width: 100%; text-align: center; }
+            textarea { min-height: 220px; }
         }
     </style>
 </head>
 <body>
     <div class="wrap">
         <section class="hero">
-            <h1>Edge TTS Portable</h1>
-            <p>Standalone interface in <code>index.html</code> with a local FastAPI backend. Open it via <code>start.bat</code>, wait for initialization, and use it through the browser or via HTTP endpoints at <code>http://127.0.0.1:8890</code>.</p>
-            <div class="badges">
-                <div class="badge" id="apiBadge">Checking API...</div>
-                <div class="badge">Best quality: Native MP3</div>
-                <div class="badge">Compatible with browsers and automation</div>
-            </div>
+            <h1>Evo Edge TTS</h1>
         </section>
 
         <div class="grid">
@@ -203,7 +162,7 @@
                 <form id="ttsForm" class="stack">
                     <div>
                         <label for="text">Text</label>
-                        <textarea id="text" name="text" placeholder="Type the text you want to synthesize."></textarea>
+                        <textarea id="text" name="text" placeholder="Type the text you want to convert into audio."></textarea>
                     </div>
 
                     <div class="cols">
@@ -248,28 +207,21 @@
                         <div>
                             <label for="output_format">Format</label>
                             <select id="output_format" name="output_format">
-                                <option value="mp3" selected>Native MP3</option>
-                                <option value="wav">Converted WAV</option>
+                                <option value="mp3" selected>MP3</option>
+                                <option value="wav">WAV</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="actions">
                         <button type="submit" id="generateBtn">Generate Audio</button>
-                        <a class="link-button secondary" href="http://127.0.0.1:8890/docs" target="_blank" rel="noreferrer">Open API Docs</a>
                     </div>
                 </form>
             </section>
 
             <aside class="panel">
-                <h2>Status and API</h2>
-                <div id="statusBox" class="status warn">Waiting for local API at <code>http://127.0.0.1:8890/health</code>.</div>
-
-                <div class="meta">
-                    <div><strong>Endpoint:</strong> <span class="mono">POST /edge-tts</span></div>
-                    <div><strong>Recommended:</strong> <span>use <code>mp3</code> to avoid reconversion and preserve the native Edge-TTS audio.</span></div>
-                    <div><strong>Generated files:</strong> <span>the API also saves them in <code>output/</code>.</span></div>
-                </div>
+                <h2>Status</h2>
+                <div id="statusBox" class="status warn">Starting system...</div>
 
                 <div class="player" id="playerPanel">
                     <h2>Result</h2>
@@ -278,11 +230,6 @@
                     <div class="actions">
                         <a id="downloadBtn" class="link-button" download="audio.mp3">Download Audio</a>
                     </div>
-                </div>
-
-                <div class="meta" style="margin-top: 18px;">
-                    <div><strong>cURL Example:</strong></div>
-                    <div class="mono">curl -X POST http://127.0.0.1:8890/edge-tts -F "text=Hello World" -F "output_format=mp3"</div>
                 </div>
             </aside>
         </div>
@@ -295,7 +242,6 @@
         const textField = document.getElementById("text");
         const generateBtn = document.getElementById("generateBtn");
         const statusBox = document.getElementById("statusBox");
-        const apiBadge = document.getElementById("apiBadge");
         const playerPanel = document.getElementById("playerPanel");
         const audioPlayer = document.getElementById("audioPlayer");
         const downloadBtn = document.getElementById("downloadBtn");
@@ -303,7 +249,7 @@
         const form = document.getElementById("ttsForm");
 
         const fallbackProfiles = [
-            { id: "default", label: "Natural default", voice: "en-US-AriaNeural", speed: "+0%", pitch: "+0Hz", volume: "+0%" },
+            { id: "default", label: "Natural", voice: "en-US-AriaNeural", speed: "+0%", pitch: "+0Hz", volume: "+0%" },
             { id: "clear_female", label: "Clear Female", voice: "en-US-AriaNeural", speed: "-5%", pitch: "+0Hz", volume: "+0%" },
             { id: "clear_male", label: "Clear Male", voice: "en-US-GuyNeural", speed: "-3%", pitch: "+0Hz", volume: "+0%" }
         ];
@@ -367,15 +313,13 @@
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
-                const data = await response.json();
+                await response.json();
                 statusBox.className = "status ok";
-                statusBox.innerHTML = `API online. Engine: <code>${data.engine}</code> | Version: <code>${data.version}</code>`;
-                apiBadge.textContent = "API online at 127.0.0.1:8890";
+                statusBox.textContent = "System ready.";
                 return true;
             } catch (error) {
                 statusBox.className = "status bad";
-                statusBox.innerHTML = "API offline. Run <code>start.bat</code> and wait a few seconds.";
-                apiBadge.textContent = "API offline";
+                statusBox.textContent = "System offline. Run start.bat and wait a few seconds.";
                 return false;
             }
         }
@@ -396,7 +340,7 @@
             const text = textField.value.trim();
             if (!text) {
                 statusBox.className = "status bad";
-                statusBox.textContent = "Enter text before generating.";
+                statusBox.textContent = "Enter some text before generating audio.";
                 return;
             }
 
@@ -434,14 +378,13 @@
                 audioPlayer.play().catch(() => {});
 
                 const outputFile = response.headers.get("X-Output-File") || `audio.${formData.get("output_format")}`;
-                const generationTime = response.headers.get("X-Generation-Time") || "";
                 const voice = response.headers.get("X-Voice") || voiceSelect.value;
                 const profile = response.headers.get("X-Profile") || profileSelect.value;
                 const format = response.headers.get("X-Output-Format") || formData.get("output_format");
 
                 downloadBtn.href = currentAudioUrl;
                 downloadBtn.download = outputFile;
-                resultMeta.innerHTML = `File: <code>${outputFile}</code><br>Profile: <code>${profile}</code> | Voice: <code>${voice}</code> | Format: <code>${format}</code> | Time: <code>${generationTime}</code>`;
+                resultMeta.innerHTML = `File: <code>${outputFile}</code><br>Profile: <code>${profile}</code> | Voice: <code>${voice}</code> | Format: <code>${format}</code>`;
                 playerPanel.classList.add("active");
 
                 statusBox.className = "status ok";

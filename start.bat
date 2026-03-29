@@ -1,4 +1,5 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-call scripts\start.bat
+start "Evo Edge TTS" cmd /c call "%CD%\scripts\start.bat"
+exit /b 0

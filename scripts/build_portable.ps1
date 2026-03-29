@@ -36,10 +36,11 @@ Edge TTS Portable
 =================
 
 1. Run start.bat
-2. Wait for the API to start and the environment to be configured automatically
-3. The interface ui\index.html will open automatically
-4. Local API: http://127.0.0.1:8890
-5. Swagger Docs: http://127.0.0.1:8890/docs
+2. On the first run, wait while the package downloads Portable Python, FFmpeg and required libraries
+3. The interface ui\index.html will open automatically when the API is ready
+4. If you prefer, you can also run Install.bat first and then use start.bat
+5. Local API: http://127.0.0.1:8890
+6. Swagger Docs: http://127.0.0.1:8890/docs
 
 Structure:
 - app\api.py = FastAPI API
@@ -48,7 +49,7 @@ Structure:
 - output\ = generated audio files
 
 Notes:
-- This distribution will automatically download portable Python and FFmpeg on the first run.
+- This distribution can install itself on the first run of start.bat.
 - Native MP3 is the recommended format for best fidelity.
 "@
 

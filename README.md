@@ -1,60 +1,183 @@
-# EvoEdgeTTS Portable
+# Evo Edge TTS
 
-EvoEdgeTTS is a portable, easy-to-use interface and API for Text-To-Speech synthesis using Microsoft Edge. The main advantage of this project is its **portability** and focus on end users: you don't need to know how to code, use the terminal, or manually install Python/FFmpeg. The system handles everything automatically on the first run!
+Portable local Text-to-Speech with a clean browser interface powered by Microsoft Edge TTS.
 
-## 🚀 How to Download and Install (For Regular Users)
+![Evo Edge TTS interface](image.png)
 
-This project is designed to be 100% "Plug and Play". Follow these steps:
+## Overview
 
-1. **Download the project**: Click the green **Code** button (at the top of this page) and select **Download ZIP**.
-2. **Extract the files**: Unzip the downloaded file to a folder on your computer (e.g., `Documents` or `Desktop`).
-3. **Automatic Installation**: 
-   - Double-click the **`Install.bat`** file.
-   - A black screen will open. The system will silently download Portable Python and FFmpeg, and configure everything for your computer automatically. This might take a few minutes depending on your internet connection.
-   - Wait for the **[SUCCESS]** message and press any key to close the window.
-4. **Use the program**: 
-   - Double-click the **`start.bat`** file.
-   - The EvoEdgeTTS interface will magically open in your web browser!
+Evo Edge TTS is designed for users who want a simple Windows app experience without manually installing Python, configuring FFmpeg, or using a developer workflow.
 
-*Note: If you forget to click `Install.bat` and open `start.bat` directly, the system will warn you to run the installer first.*
+The project runs a local FastAPI server and opens a browser-based interface where you can:
 
----
+- type text and generate speech
+- choose a voice profile
+- adjust speed, pitch, and volume
+- export audio as `MP3` or `WAV`
+- download the generated file directly from the interface
 
-## 🛠️ For Developers and Advanced Users
+## Main Features
 
-EvoEdgeTTS runs a local FastAPI server and provides a clean, responsive UI natively.
+- Portable setup with embeddable Python
+- Automatic first-run installation
+- Automatic FFmpeg download for WAV export
+- Local browser UI
+- Built-in API on `http://127.0.0.1:8890`
+- Generated files saved in `output/`
 
-### Project Structure
-- `app/api.py`: Contains the FastAPI implementation and native audio generation logic using `edge-tts`.
-- `ui/index.html`: Visual interface (pure HTML, CSS, and JS) that consumes the local API.
-- `scripts/`: PowerShell/Batch scripts responsible for environment automation and initialization.
-- `Install.bat` and `start.bat`: Root shortcuts for easy access.
-- `output/`: Folder where generated audio files (MP3/WAV) are saved (created automatically).
+## Requirements
 
-### API Routes (Port 8890)
-When the system is running (via `start.bat`), the following endpoints are available:
-- Interface: `http://127.0.0.1:8890`
-- Swagger Documentation: `http://127.0.0.1:8890/docs`
-- Status: `GET /health`
-- List Voices: `GET /edge-tts/voices`
-- List Profiles: `GET /edge-tts/profiles`
-- Generate Audio: `POST /edge-tts` (Accepts parameters via Multipart Form)
+- Windows
+- Internet connection on the first run
+- Permission to run `.bat` files and PowerShell scripts
 
-### Building Your Own Release ZIP
-If you have modified the code and want to generate your own "Plug and Play" `.zip` file for distribution:
-1. Open PowerShell.
-2. Navigate to the project folder.
-3. Run the command: `.\scripts\build_portable.ps1`
-4. The ready-to-use file will be generated in the `dist/edge-tts-portable.zip` folder.
+Notes:
 
----
+- Python is not installed globally on the machine
+- FFmpeg is stored locally inside the project folder
+- The app still needs internet access to generate voices because `edge-tts` connects to Microsoft Edge voice services
 
-## ⚙️ Technologies Used
-- **Python Embeddable** (100% isolated, does not clutter the user's PC)
-- **FastAPI** & **Uvicorn**
-- **edge-tts**
-- **FFmpeg** & **pydub** (downloaded at runtime for WAV conversion, no PATH configuration needed)
-- UI built entirely with modern **HTML/CSS/JS**.
+## Installation
 
----
-**Legal Note:** This project is not affiliated with or supported by Microsoft. Audio generation is based on the free read-aloud APIs included in the Edge browser services.
+There are two ways to install Evo Edge TTS.
+
+### Option 1: Recommended for most users
+
+1. Download the project as a ZIP from GitHub.
+2. Extract the ZIP to a normal folder such as `Desktop` or `Documents`.
+3. Double-click [`start.bat`](start.bat).
+4. On the first run, the app will automatically:
+   - download portable Python
+   - download FFmpeg
+   - install the required Python packages
+   - start the local API
+   - open the interface in your default browser
+
+### Option 2: Manual pre-install
+
+1. Download and extract the project.
+2. Double-click [`Install.bat`](Install.bat).
+3. Wait until the installation finishes.
+4. Double-click [`start.bat`](start.bat).
+
+## What Happens on First Run
+
+When you start the app for the first time, Evo Edge TTS prepares its local environment inside the project folder.
+
+It creates and uses:
+
+- `env/` for embeddable Python
+- `bin/` for `ffmpeg.exe`
+- `output/` for generated audio files
+
+No global Python setup is required.
+
+## How to Use
+
+1. Run [`start.bat`](start.bat).
+2. Wait for the API window to finish loading.
+3. Your browser will open the Evo Edge TTS interface automatically.
+4. Type the text you want to convert.
+5. Choose:
+   - a profile
+   - a voice
+   - speed
+   - pitch
+   - volume
+   - output format
+6. Click `Generate Audio`.
+7. Listen to the result in the built-in audio player.
+8. Click `Download Audio` to save the file.
+
+Generated files are also stored in the [`output`](output) folder.
+
+## Startup and Shutdown
+
+### Start
+
+- Run [`start.bat`](start.bat)
+- The launcher opens the app window
+- The local API starts
+- The browser opens only after the API is fully ready
+
+### Stop
+
+- Closing the running app window usually stops the local API
+- If needed, you can force-stop the app with [`stop.bat`](stop.bat)
+
+## File Structure
+
+- [`app/api.py`](app/api.py): FastAPI backend and audio generation logic
+- [`ui/index.html`](ui/index.html): Browser interface
+- [`scripts/setup.ps1`](scripts/setup.ps1): Downloads Python, pip, dependencies, and FFmpeg
+- [`scripts/start.bat`](scripts/start.bat): Starts the local API and opens the interface after the API is ready
+- [`scripts/stop.bat`](scripts/stop.bat): Stops the API process on port `8890`
+- [`Install.bat`](Install.bat): Optional manual installer
+- [`start.bat`](start.bat): Main entry point for users
+- [`stop.bat`](stop.bat): Optional forced shutdown shortcut
+
+## API Endpoints
+
+When the app is running, these endpoints are available:
+
+- `GET /health`
+- `GET /edge-tts/voices`
+- `GET /edge-tts/profiles`
+- `POST /edge-tts`
+- Swagger docs: `http://127.0.0.1:8890/docs`
+
+## Audio Formats
+
+- `MP3`: Native Edge TTS output and the fastest option
+- `WAV`: Converted locally through FFmpeg after MP3 generation
+
+## Troubleshooting
+
+### The browser does not open
+
+- Wait a few more seconds for the API to finish loading
+- Check whether your browser blocked local file opening
+- Open [`ui/index.html`](ui/index.html) manually if needed
+
+### The app says the system is offline
+
+- Keep the API window open
+- Run [`start.bat`](start.bat) again
+- Make sure port `8890` is not blocked by another process
+
+### WAV does not work
+
+- Make sure FFmpeg finished downloading during setup
+- Run [`Install.bat`](Install.bat) again if the first setup was interrupted
+
+### Voice generation fails
+
+- Check your internet connection
+- Edge TTS requires online access to Microsoft voice services
+
+## Building a Portable Release ZIP
+
+If you want to generate a new distributable ZIP:
+
+1. Open PowerShell in the project folder.
+2. Run:
+
+```powershell
+.\scripts\build_portable.ps1
+```
+
+3. The generated package will be placed in `dist/edge-tts-portable.zip`.
+
+## Technologies Used
+
+- Python Embeddable
+- FastAPI
+- Uvicorn
+- edge-tts
+- FFmpeg
+- pydub
+- HTML/CSS/JavaScript
+
+## Legal Note
+
+This project is not affiliated with or endorsed by Microsoft. Voice generation depends on Microsoft Edge TTS services.
