@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edge TTS Portable</title>
+    <style>
+        * { box-sizing: border-box; }
+        :root {
+            --bg: #09111f;
+            --panel: rgba(12, 27, 48, 0.92);
+            --panel-alt: rgba(9, 20, 37, 0.88);
+            --line: #26436a;
+            --text: #edf5ff;
+            --muted: #97abc8;
+            --accent: #44d1ff;
+            --accent-2: #1379ff;
+            --ok: #7ef0af;
+            --bad: #ff9db2;
+            --warn: #ffd479;
+        }
+        body {
+            margin: 0;
+            font-family: "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(68, 209, 255, 0.18), transparent 28%),
+                radial-gradient(circle at top right, rgba(19, 121, 255, 0.15), transparent 24%),
+                linear-gradient(180deg, #050a14 0%, var(--bg) 100%);
+            min-height: 100vh;
+        }
+        .wrap {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 28px 18px 40px;
+        }
+        .hero, .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.28);
+        }
+        .hero {
+            padding: 28px;
+            margin-bottom: 18px;
+        }
+        .hero h1 {
+            margin: 0 0 10px;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+        }
+        .hero p {
+            margin: 0;
+            max-width: 760px;
+            line-height: 1.55;
+            color: var(--muted);
+        }
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .badge {
+            background: var(--panel-alt);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 0.92rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1.3fr 0.9fr;
+            gap: 18px;
+        }
+        .panel {
+            padding: 22px;
+        }
+        .panel h2 {
+            margin: 0 0 14px;
+            font-size: 1.08rem;
+            color: var(--accent);
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .stack {
+            display: grid;
+            gap: 12px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-size: 0.93rem;
+        }
+        textarea, select {
+            width: 100%;
+            border: 1px solid var(--line);
+            background: rgba(5, 14, 27, 0.92);
+            color: var(--text);
+            border-radius: 14px;
+            padding: 12px 13px;
+            font: inherit;
+        }
+        textarea {
+            min-height: 240px;
+            resize: vertical;
+            line-height: 1.55;
+        }
+        .cols {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        button, .link-button {
+            border: 0;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font: inherit;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+        button.secondary, .link-button.secondary {
+            background: rgba(7, 18, 34, 0.95);
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            background: rgba(7, 18, 34, 0.95);
+            line-height: 1.5;
+        }
+        .status.ok { border-color: rgba(126, 240, 175, 0.35); color: var(--ok); }
+        .status.bad { border-color: rgba(255, 157, 178, 0.35); color: var(--bad); }
+        .status.warn { border-color: rgba(255, 212, 121, 0.35); color: var(--warn); }
+        .meta {
+            display: grid;
+            gap: 8px;
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 0.94rem;
+            line-height: 1.5;
+        }
+        .player {
+            margin-top: 16px;
+            display: none;
+        }
+        .player.active { display: block; }
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+        code {
+            font-family: Consolas, monospace;
+            color: var(--text);
+        }
+        .mono {
+            word-break: break-all;
+            font-family: Consolas, monospace;
+        }
+        @media (max-width: 920px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+            .cols { grid-template-columns: 1fr; }
+            .actions { flex-direction: column; }
+            button, .link-button { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <section class="hero">
+            <h1>Edge TTS Portable</h1>
+            <p>Interface standalone em <code>index.html</code> com API FastAPI local. Abra pelo <code>start.bat</code>, aguarde a inicializacao e use via navegador ou via endpoints HTTP em <code>http://127.0.0.1:8890</code>.</p>
+            <div class="badges">
+                <div class="badge" id="apiBadge">Verificando API...</div>
+                <div class="badge">Melhor qualidade: MP3 nativo</div>
+                <div class="badge">Compativel com navegador e automacoes</div>
+            </div>
+        </section>
+
+        <div class="grid">
+            <section class="panel">
+                <h2>Gerar audio</h2>
+                <form id="ttsForm" class="stack">
+                    <div>
+                        <label for="text">Texto</label>
+                        <textarea id="text" name="text" placeholder="Digite o texto que deseja sintetizar."></textarea>
+                    </div>
+
+                    <div class="cols">
+                        <div>
+                            <label for="profile">Perfil</label>
+                            <select id="profile" name="profile"></select>
+                        </div>
+                        <div>
+                            <label for="voice">Voz</label>
+                            <select id="voice" name="voice"></select>
+                        </div>
+                        <div>
+                            <label for="speed">Velocidade</label>
+                            <select id="speed" name="speed">
+                                <option value="-25%">-25%</option>
+                                <option value="-10%">-10%</option>
+                                <option value="+0%" selected>Normal</option>
+                                <option value="+10%">+10%</option>
+                                <option value="+25%">+25%</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="pitch">Pitch</label>
+                            <select id="pitch" name="pitch">
+                                <option value="-10Hz">-10Hz</option>
+                                <option value="-5Hz">-5Hz</option>
+                                <option value="+0Hz" selected>Normal</option>
+                                <option value="+5Hz">+5Hz</option>
+                                <option value="+10Hz">+10Hz</option>
+                                <option value="+12Hz">+12Hz</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="volume">Volume</label>
+                            <select id="volume" name="volume">
+                                <option value="-10%">-10%</option>
+                                <option value="+0%" selected>Normal</option>
+                                <option value="+5%">+5%</option>
+                                <option value="+10%">+10%</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="output_format">Formato</label>
+                            <select id="output_format" name="output_format">
+                                <option value="mp3" selected>MP3 nativo</option>
+                                <option value="wav">WAV convertido</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" id="generateBtn">Gerar audio</button>
+                        <a class="link-button secondary" href="http://127.0.0.1:8890/docs" target="_blank" rel="noreferrer">Abrir docs da API</a>
+                    </div>
+                </form>
+            </section>
+
+            <aside class="panel">
+                <h2>Status e API</h2>
+                <div id="statusBox" class="status warn">Aguardando API local em <code>http://127.0.0.1:8890/health</code>.</div>
+
+                <div class="meta">
+                    <div><strong>Endpoint:</strong> <span class="mono">POST /edge-tts</span></div>
+                    <div><strong>Recomendado:</strong> <span>usar <code>mp3</code> para evitar reconversao e preservar o audio nativo do Edge-TTS.</span></div>
+                    <div><strong>Arquivos gerados:</strong> <span>a API tambem salva em <code>output/</code>.</span></div>
+                </div>
+
+                <div class="player" id="playerPanel">
+                    <h2>Resultado</h2>
+                    <div id="resultMeta" class="status ok"></div>
+                    <audio id="audioPlayer" controls></audio>
+                    <div class="actions">
+                        <a id="downloadBtn" class="link-button" download="audio.mp3">Baixar audio</a>
+                    </div>
+                </div>
+
+                <div class="meta" style="margin-top: 18px;">
+                    <div><strong>Exemplo curl:</strong></div>
+                    <div class="mono">curl -X POST http://127.0.0.1:8890/edge-tts -F "text=Ola mundo" -F "output_format=mp3"</div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        const apiBase = "http://127.0.0.1:8890";
+        const profileSelect = document.getElementById("profile");
+        const voiceSelect = document.getElementById("voice");
+        const textField = document.getElementById("text");
+        const generateBtn = document.getElementById("generateBtn");
+        const statusBox = document.getElementById("statusBox");
+        const apiBadge = document.getElementById("apiBadge");
+        const playerPanel = document.getElementById("playerPanel");
+        const audioPlayer = document.getElementById("audioPlayer");
+        const downloadBtn = document.getElementById("downloadBtn");
+        const resultMeta = document.getElementById("resultMeta");
+        const form = document.getElementById("ttsForm");
+
+        const fallbackProfiles = [
+            { id: "default", label: "Padrao natural", voice: "pt-BR-FranciscaNeural", speed: "+0%", pitch: "+0Hz", volume: "+0%" },
+            { id: "clear_female", label: "Feminina clara", voice: "pt-BR-FranciscaNeural", speed: "-5%", pitch: "+0Hz", volume: "+0%" },
+            { id: "clear_male", label: "Masculina clara", voice: "pt-BR-AntonioNeural", speed: "-3%", pitch: "+0Hz", volume: "+0%" }
+        ];
+
+        const fallbackVoices = [
+            { name: "pt-BR-FranciscaNeural", gender: "Female", locale: "pt-BR" },
+            { name: "pt-BR-AntonioNeural", gender: "Male", locale: "pt-BR" },
+            { name: "pt-BR-ThalitaNeural", gender: "Female", locale: "pt-BR" }
+        ];
+
+        let currentAudioUrl = null;
+        let profiles = fallbackProfiles;
+
+        function fillProfiles(items) {
+            profileSelect.innerHTML = "";
+            items.forEach((item) => {
+                const option = document.createElement("option");
+                option.value = item.id;
+                option.textContent = item.label || item.id;
+                profileSelect.appendChild(option);
+            });
+        }
+
+        function fillVoices(items) {
+            voiceSelect.innerHTML = "";
+            items.forEach((item) => {
+                const option = document.createElement("option");
+                option.value = item.name;
+                option.textContent = `${item.name}${item.gender ? ` (${item.gender})` : ""}`;
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        function applyProfile(id) {
+            const profile = profiles.find((item) => item.id === id);
+            if (!profile) {
+                return;
+            }
+            voiceSelect.value = profile.voice;
+            document.getElementById("speed").value = profile.speed;
+            document.getElementById("pitch").value = profile.pitch;
+            document.getElementById("volume").value = profile.volume || "+0%";
+        }
+
+        async function fetchJson(path, fallback) {
+            try {
+                const response = await fetch(`${apiBase}${path}`, { cache: "no-store" });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                return fallback;
+            }
+        }
+
+        async function checkApi() {
+            try {
+                const response = await fetch(`${apiBase}/health`, { cache: "no-store" });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const data = await response.json();
+                statusBox.className = "status ok";
+                statusBox.innerHTML = `API online. Motor: <code>${data.engine}</code> | Versao: <code>${data.version}</code>`;
+                apiBadge.textContent = "API online em 127.0.0.1:8890";
+                return true;
+            } catch (error) {
+                statusBox.className = "status bad";
+                statusBox.innerHTML = "API offline. Execute o <code>start.bat</code> e aguarde alguns segundos.";
+                apiBadge.textContent = "API offline";
+                return false;
+            }
+        }
+
+        async function bootstrap() {
+            await checkApi();
+            profiles = await fetchJson("/edge-tts/profiles", fallbackProfiles);
+            const voices = await fetchJson("/edge-tts/voices", fallbackVoices);
+            fillProfiles(profiles);
+            fillVoices(voices);
+            applyProfile(profileSelect.value || "default");
+        }
+
+        profileSelect.addEventListener("change", () => applyProfile(profileSelect.value));
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const text = textField.value.trim();
+            if (!text) {
+                statusBox.className = "status bad";
+                statusBox.textContent = "Digite um texto antes de gerar.";
+                return;
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = "Gerando...";
+            statusBox.className = "status warn";
+            statusBox.textContent = "Gerando audio...";
+
+            const formData = new FormData();
+            formData.set("text", text);
+            formData.set("profile", profileSelect.value);
+            formData.set("voice", voiceSelect.value);
+            formData.set("speed", document.getElementById("speed").value);
+            formData.set("pitch", document.getElementById("pitch").value);
+            formData.set("volume", document.getElementById("volume").value);
+            formData.set("output_format", document.getElementById("output_format").value);
+
+            try {
+                const response = await fetch(`${apiBase}/edge-tts`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                if (currentAudioUrl) {
+                    URL.revokeObjectURL(currentAudioUrl);
+                }
+                currentAudioUrl = URL.createObjectURL(blob);
+                audioPlayer.src = currentAudioUrl;
+                audioPlayer.play().catch(() => {});
+
+                const outputFile = response.headers.get("X-Output-File") || `audio.${formData.get("output_format")}`;
+                const generationTime = response.headers.get("X-Generation-Time") || "";
+                const voice = response.headers.get("X-Voice") || voiceSelect.value;
+                const profile = response.headers.get("X-Profile") || profileSelect.value;
+                const format = response.headers.get("X-Output-Format") || formData.get("output_format");
+
+                downloadBtn.href = currentAudioUrl;
+                downloadBtn.download = outputFile;
+                resultMeta.innerHTML = `Arquivo: <code>${outputFile}</code><br>Perfil: <code>${profile}</code> | Voz: <code>${voice}</code> | Formato: <code>${format}</code> | Tempo: <code>${generationTime}</code>`;
+                playerPanel.classList.add("active");
+
+                statusBox.className = "status ok";
+                statusBox.textContent = "Audio gerado com sucesso.";
+            } catch (error) {
+                statusBox.className = "status bad";
+                statusBox.textContent = `Falha ao gerar audio: ${error.message}`;
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = "Gerar audio";
+            }
+        });
+
+        bootstrap();
+        setInterval(checkApi, 10000);
+    </script>
+</body>
+</html>

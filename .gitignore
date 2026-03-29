@@ -1,0 +1,19 @@
+# Ignore pastas geradas localmente
+__pycache__/
+env/
+bin/
+output/
+dist/
+venv/
+*.zip
+
+# Logs
+logs/
+*.log
+
+# Ignore VSCode e outras configs locais
+.vscode/
+.idea/
+*.suo
+.claude/
+.agent/
