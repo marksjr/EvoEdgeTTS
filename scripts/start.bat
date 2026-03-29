@@ -19,10 +19,10 @@ if not exist "%CD%\bin\ffmpeg.exe" goto :missing_setup
 goto :skip_setup
 
 :missing_setup
-echo [ERRO] Ambiente nao configurado ou arquivos ausentes!
+echo [ERROR] Environment not configured or files missing!
 echo.
-echo Por favor, feche esta janela e execute o arquivo "Instalar.bat"
-echo para baixar os requisitos (Python e FFmpeg) automaticamente.
+echo Please close this window and run the "Install.bat" file
+echo to automatically download the requirements (Python and FFmpeg).
 pause
 exit /b 1
 
@@ -38,14 +38,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
     "try { $r = Invoke-WebRequest -UseBasicParsing '%API_URL%' -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }"
 if not errorlevel 1 (
     set "READY=1"
-    echo [1/3] API ja estava online.
+    echo [1/3] API was already online.
     goto :open_ui
 )
 
-echo [1/3] Iniciando API FastAPI em nova janela...
+echo [1/3] Starting FastAPI in a new window...
 start "Edge TTS API" cmd /k ""%PYTHON_EXE%" "%API_FILE%""
 
-echo [2/3] Aguardando API responder...
+echo [2/3] Waiting for API to respond...
 for /L %%I in (1,1,40) do (
     powershell -NoProfile -ExecutionPolicy Bypass -Command ^
         "try { $r = Invoke-WebRequest -UseBasicParsing '%API_URL%' -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }"
@@ -58,18 +58,18 @@ for /L %%I in (1,1,40) do (
 
 :open_ui
 if "%READY%"=="1" (
-    echo [3/3] Abrindo interface...
+    echo [3/3] Opening interface...
     start "" "%UI_FILE%"
     echo.
-    echo API pronta em http://%HOST%:%PORT%
-    echo Docs em http://%HOST%:%PORT%/docs
+    echo API ready at http://%HOST%:%PORT%
+    echo Docs at http://%HOST%:%PORT%/docs
 ) else (
-    echo [AVISO] A API nao respondeu a tempo.
-    echo Abra manualmente depois:
+    echo [WARNING] API did not respond in time.
+    echo Open manually later:
     echo   %UI_FILE%
     echo   http://%HOST%:%PORT%/docs
 )
 
 echo.
-echo Para encerrar, feche a janela "Edge TTS API" ou execute stop.bat.
+echo To close, close the "Edge TTS API" window or run stop.bat.
 pause

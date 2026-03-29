@@ -1,60 +1,60 @@
 # EvoEdgeTTS Portable
 
-EvoEdgeTTS é uma interface e API portáteis e fáceis de usar para a síntese de fala (Text-To-Speech) via Microsoft Edge. A principal vantagem deste projeto é a sua **portabilidade** e foco em usuários finais: não é necessário saber programar, usar o terminal ou instalar Python/FFmpeg manualmente. O sistema faz tudo sozinho na primeira execução!
+EvoEdgeTTS is a portable, easy-to-use interface and API for Text-To-Speech synthesis using Microsoft Edge. The main advantage of this project is its **portability** and focus on end users: you don't need to know how to code, use the terminal, or manually install Python/FFmpeg. The system handles everything automatically on the first run!
 
-## 🚀 Como Baixar e Instalar (Para Usuários Leigos)
+## 🚀 How to Download and Install (For Regular Users)
 
-Este projeto foi desenhado para ser 100% "Plug and Play". Siga os passos abaixo:
+This project is designed to be 100% "Plug and Play". Follow these steps:
 
-1. **Baixe o projeto**: Clique no botão verde **Code** (no topo desta página) e selecione **Download ZIP**.
-2. **Extraia os arquivos**: Descompacte o arquivo ZIP em uma pasta no seu computador (ex: `Documentos` ou `Área de Trabalho`).
-3. **Instalação Automática**: 
-   - Dê um duplo clique no arquivo **`Instalar.bat`**.
-   - Uma tela preta abrirá. O sistema baixará o Python Portátil e o FFmpeg automaticamente de forma silenciosa e configurará tudo sozinho para o seu computador. Isso pode levar alguns minutos dependendo da sua internet.
-   - Aguarde aparecer a mensagem de **[SUCESSO]** e pressione qualquer tecla para fechar.
-4. **Use o programa**: 
-   - Dê um duplo clique no arquivo **`start.bat`**.
-   - A interface do EvoEdgeTTS abrirá magicamente no seu navegador da web!
+1. **Download the project**: Click the green **Code** button (at the top of this page) and select **Download ZIP**.
+2. **Extract the files**: Unzip the downloaded file to a folder on your computer (e.g., `Documents` or `Desktop`).
+3. **Automatic Installation**: 
+   - Double-click the **`Install.bat`** file.
+   - A black screen will open. The system will silently download Portable Python and FFmpeg, and configure everything for your computer automatically. This might take a few minutes depending on your internet connection.
+   - Wait for the **[SUCCESS]** message and press any key to close the window.
+4. **Use the program**: 
+   - Double-click the **`start.bat`** file.
+   - The EvoEdgeTTS interface will magically open in your web browser!
 
-*Nota: Se você esquecer de clicar no `Instalar.bat` e abrir direto o `start.bat`, não se preocupe! O sistema é inteligente e tentará fazer a instalação automaticamente para você.*
+*Note: If you forget to click `Install.bat` and open `start.bat` directly, the system will warn you to run the installer first.*
 
 ---
 
-## 🛠️ Para Desenvolvedores e Usuários Avançados
+## 🛠️ For Developers and Advanced Users
 
-O EvoEdgeTTS roda um servidor FastAPI local e oferece uma UI limpa e responsiva nativamente.
+EvoEdgeTTS runs a local FastAPI server and provides a clean, responsive UI natively.
 
-### Estrutura do Projeto
-- `app/api.py`: Contém a API do FastAPI e as lógicas de geração de áudio nativas usando `edge-tts`.
-- `ui/index.html`: Interface visual (HTML, CSS e JS puros) que consome a API local.
-- `scripts/`: Scripts PowerShell/Batch responsáveis pela automação de ambiente e inicialização.
-- `Instalar.bat` e `start.bat`: Atalhos de raiz para fácil acesso.
-- `output/`: Pasta onde os áudios gerados (MP3/WAV) são salvos (criada automaticamente).
+### Project Structure
+- `app/api.py`: Contains the FastAPI implementation and native audio generation logic using `edge-tts`.
+- `ui/index.html`: Visual interface (pure HTML, CSS, and JS) that consumes the local API.
+- `scripts/`: PowerShell/Batch scripts responsible for environment automation and initialization.
+- `Install.bat` and `start.bat`: Root shortcuts for easy access.
+- `output/`: Folder where generated audio files (MP3/WAV) are saved (created automatically).
 
-### Rotas da API (Porta 8890)
-Quando o sistema está rodando (via `start.bat`), os seguintes endpoints ficam disponíveis:
+### API Routes (Port 8890)
+When the system is running (via `start.bat`), the following endpoints are available:
 - Interface: `http://127.0.0.1:8890`
-- Documentação Swagger: `http://127.0.0.1:8890/docs`
+- Swagger Documentation: `http://127.0.0.1:8890/docs`
 - Status: `GET /health`
-- Listar Vozes: `GET /edge-tts/voices`
-- Listar Perfis: `GET /edge-tts/profiles`
-- Gerar Áudio: `POST /edge-tts` (Aceita parâmetros via Multipart Form)
+- List Voices: `GET /edge-tts/voices`
+- List Profiles: `GET /edge-tts/profiles`
+- Generate Audio: `POST /edge-tts` (Accepts parameters via Multipart Form)
 
-### Construindo sua própria Release ZIP
-Se você modificou o código e deseja gerar o seu próprio arquivo `.zip` "Plug and Play" para distribuir:
-1. Abra o PowerShell.
-2. Navegue até a pasta do projeto.
-3. Execute o comando: `.\scripts\build_portable.ps1`
-4. O arquivo pronto será gerado na pasta `dist/edge-tts-portable.zip`.
+### Building Your Own Release ZIP
+If you have modified the code and want to generate your own "Plug and Play" `.zip` file for distribution:
+1. Open PowerShell.
+2. Navigate to the project folder.
+3. Run the command: `.\scripts\build_portable.ps1`
+4. The ready-to-use file will be generated in the `dist/edge-tts-portable.zip` folder.
 
 ---
 
-## ⚙️ Tecnologias Utilizadas
-- **Python Embeddable** (100% isolado, não suja o PC do usuário)
+## ⚙️ Technologies Used
+- **Python Embeddable** (100% isolated, does not clutter the user's PC)
 - **FastAPI** & **Uvicorn**
 - **edge-tts**
-- **FFmpeg** & **pydub** (baixados em runtime para conversão de WAV, sem necessidade de configuração no PATH)
-- UI feita puramente com **HTML/CSS/JS** modernos.
+- **FFmpeg** & **pydub** (downloaded at runtime for WAV conversion, no PATH configuration needed)
+- UI built entirely with modern **HTML/CSS/JS**.
 
 ---
-**Nota Legal:** Este projeto não é afiliado ou suportado pela Microsoft. A geração de áudio é baseada nas APIs de leitura em voz alta gratuitas incluídas nos serviços do navegador Edge.
+**Legal Note:** This project is not affiliated with or supported by Microsoft. Audio generation is based on the free read-aloud APIs included in the Edge browser services.

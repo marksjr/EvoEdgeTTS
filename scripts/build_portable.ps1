@@ -24,7 +24,7 @@ $itemsToCopy = @(
     "requirements.txt",
     "start.bat",
     "stop.bat",
-    "Instalar.bat"
+    "Install.bat"
 )
 
 foreach ($item in $itemsToCopy) {
@@ -35,21 +35,21 @@ $readme = @"
 Edge TTS Portable
 =================
 
-1. Execute start.bat
-2. Aguarde a API subir e o ambiente ser configurado automaticamente
-3. A interface ui\index.html abrira automaticamente
-4. API local: http://127.0.0.1:8890
-5. Docs Swagger: http://127.0.0.1:8890/docs
+1. Run start.bat
+2. Wait for the API to start and the environment to be configured automatically
+3. The interface ui\index.html will open automatically
+4. Local API: http://127.0.0.1:8890
+5. Swagger Docs: http://127.0.0.1:8890/docs
 
-Estrutura:
-- app\api.py = API FastAPI
-- ui\index.html = interface visual
-- scripts\ = automacao
-- output\ = audios gerados
+Structure:
+- app\api.py = FastAPI API
+- ui\index.html = visual interface
+- scripts\ = automation
+- output\ = generated audio files
 
-Observacoes:
-- Esta distribuicao baixara o Python portatil e FFmpeg automaticamente na primeira execucao.
-- O formato recomendado para melhor fidelidade e MP3 nativo.
+Notes:
+- This distribution will automatically download portable Python and FFmpeg on the first run.
+- Native MP3 is the recommended format for best fidelity.
 "@
 
 Set-Content -Path (Join-Path $portableDir "README.txt") -Value $readme -Encoding ASCII
@@ -60,7 +60,7 @@ if (Test-Path $zipPath) {
 
 Compress-Archive -Path (Join-Path $portableDir "*") -DestinationPath $zipPath -CompressionLevel Optimal
 
-Write-Host "Portable gerado em:"
+Write-Host "Portable generated at:"
 Write-Host "  $portableDir"
 Write-Host "Zip:"
 Write-Host "  $zipPath"

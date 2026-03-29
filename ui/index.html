@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -189,34 +189,34 @@
     <div class="wrap">
         <section class="hero">
             <h1>Edge TTS Portable</h1>
-            <p>Interface standalone em <code>index.html</code> com API FastAPI local. Abra pelo <code>start.bat</code>, aguarde a inicializacao e use via navegador ou via endpoints HTTP em <code>http://127.0.0.1:8890</code>.</p>
+            <p>Standalone interface in <code>index.html</code> with a local FastAPI backend. Open it via <code>start.bat</code>, wait for initialization, and use it through the browser or via HTTP endpoints at <code>http://127.0.0.1:8890</code>.</p>
             <div class="badges">
-                <div class="badge" id="apiBadge">Verificando API...</div>
-                <div class="badge">Melhor qualidade: MP3 nativo</div>
-                <div class="badge">Compativel com navegador e automacoes</div>
+                <div class="badge" id="apiBadge">Checking API...</div>
+                <div class="badge">Best quality: Native MP3</div>
+                <div class="badge">Compatible with browsers and automation</div>
             </div>
         </section>
 
         <div class="grid">
             <section class="panel">
-                <h2>Gerar audio</h2>
+                <h2>Generate Audio</h2>
                 <form id="ttsForm" class="stack">
                     <div>
-                        <label for="text">Texto</label>
-                        <textarea id="text" name="text" placeholder="Digite o texto que deseja sintetizar."></textarea>
+                        <label for="text">Text</label>
+                        <textarea id="text" name="text" placeholder="Type the text you want to synthesize."></textarea>
                     </div>
 
                     <div class="cols">
                         <div>
-                            <label for="profile">Perfil</label>
+                            <label for="profile">Profile</label>
                             <select id="profile" name="profile"></select>
                         </div>
                         <div>
-                            <label for="voice">Voz</label>
+                            <label for="voice">Voice</label>
                             <select id="voice" name="voice"></select>
                         </div>
                         <div>
-                            <label for="speed">Velocidade</label>
+                            <label for="speed">Speed</label>
                             <select id="speed" name="speed">
                                 <option value="-25%">-25%</option>
                                 <option value="-10%">-10%</option>
@@ -246,43 +246,43 @@
                             </select>
                         </div>
                         <div>
-                            <label for="output_format">Formato</label>
+                            <label for="output_format">Format</label>
                             <select id="output_format" name="output_format">
-                                <option value="mp3" selected>MP3 nativo</option>
-                                <option value="wav">WAV convertido</option>
+                                <option value="mp3" selected>Native MP3</option>
+                                <option value="wav">Converted WAV</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="actions">
-                        <button type="submit" id="generateBtn">Gerar audio</button>
-                        <a class="link-button secondary" href="http://127.0.0.1:8890/docs" target="_blank" rel="noreferrer">Abrir docs da API</a>
+                        <button type="submit" id="generateBtn">Generate Audio</button>
+                        <a class="link-button secondary" href="http://127.0.0.1:8890/docs" target="_blank" rel="noreferrer">Open API Docs</a>
                     </div>
                 </form>
             </section>
 
             <aside class="panel">
-                <h2>Status e API</h2>
-                <div id="statusBox" class="status warn">Aguardando API local em <code>http://127.0.0.1:8890/health</code>.</div>
+                <h2>Status and API</h2>
+                <div id="statusBox" class="status warn">Waiting for local API at <code>http://127.0.0.1:8890/health</code>.</div>
 
                 <div class="meta">
                     <div><strong>Endpoint:</strong> <span class="mono">POST /edge-tts</span></div>
-                    <div><strong>Recomendado:</strong> <span>usar <code>mp3</code> para evitar reconversao e preservar o audio nativo do Edge-TTS.</span></div>
-                    <div><strong>Arquivos gerados:</strong> <span>a API tambem salva em <code>output/</code>.</span></div>
+                    <div><strong>Recommended:</strong> <span>use <code>mp3</code> to avoid reconversion and preserve the native Edge-TTS audio.</span></div>
+                    <div><strong>Generated files:</strong> <span>the API also saves them in <code>output/</code>.</span></div>
                 </div>
 
                 <div class="player" id="playerPanel">
-                    <h2>Resultado</h2>
+                    <h2>Result</h2>
                     <div id="resultMeta" class="status ok"></div>
                     <audio id="audioPlayer" controls></audio>
                     <div class="actions">
-                        <a id="downloadBtn" class="link-button" download="audio.mp3">Baixar audio</a>
+                        <a id="downloadBtn" class="link-button" download="audio.mp3">Download Audio</a>
                     </div>
                 </div>
 
                 <div class="meta" style="margin-top: 18px;">
-                    <div><strong>Exemplo curl:</strong></div>
-                    <div class="mono">curl -X POST http://127.0.0.1:8890/edge-tts -F "text=Ola mundo" -F "output_format=mp3"</div>
+                    <div><strong>cURL Example:</strong></div>
+                    <div class="mono">curl -X POST http://127.0.0.1:8890/edge-tts -F "text=Hello World" -F "output_format=mp3"</div>
                 </div>
             </aside>
         </div>
@@ -303,15 +303,16 @@
         const form = document.getElementById("ttsForm");
 
         const fallbackProfiles = [
-            { id: "default", label: "Padrao natural", voice: "pt-BR-FranciscaNeural", speed: "+0%", pitch: "+0Hz", volume: "+0%" },
-            { id: "clear_female", label: "Feminina clara", voice: "pt-BR-FranciscaNeural", speed: "-5%", pitch: "+0Hz", volume: "+0%" },
-            { id: "clear_male", label: "Masculina clara", voice: "pt-BR-AntonioNeural", speed: "-3%", pitch: "+0Hz", volume: "+0%" }
+            { id: "default", label: "Natural default", voice: "en-US-AriaNeural", speed: "+0%", pitch: "+0Hz", volume: "+0%" },
+            { id: "clear_female", label: "Clear Female", voice: "en-US-AriaNeural", speed: "-5%", pitch: "+0Hz", volume: "+0%" },
+            { id: "clear_male", label: "Clear Male", voice: "en-US-GuyNeural", speed: "-3%", pitch: "+0Hz", volume: "+0%" }
         ];
 
         const fallbackVoices = [
+            { name: "en-US-AriaNeural", gender: "Female", locale: "en-US" },
+            { name: "en-US-GuyNeural", gender: "Male", locale: "en-US" },
             { name: "pt-BR-FranciscaNeural", gender: "Female", locale: "pt-BR" },
-            { name: "pt-BR-AntonioNeural", gender: "Male", locale: "pt-BR" },
-            { name: "pt-BR-ThalitaNeural", gender: "Female", locale: "pt-BR" }
+            { name: "pt-BR-AntonioNeural", gender: "Male", locale: "pt-BR" }
         ];
 
         let currentAudioUrl = null;
@@ -368,12 +369,12 @@
                 }
                 const data = await response.json();
                 statusBox.className = "status ok";
-                statusBox.innerHTML = `API online. Motor: <code>${data.engine}</code> | Versao: <code>${data.version}</code>`;
-                apiBadge.textContent = "API online em 127.0.0.1:8890";
+                statusBox.innerHTML = `API online. Engine: <code>${data.engine}</code> | Version: <code>${data.version}</code>`;
+                apiBadge.textContent = "API online at 127.0.0.1:8890";
                 return true;
             } catch (error) {
                 statusBox.className = "status bad";
-                statusBox.innerHTML = "API offline. Execute o <code>start.bat</code> e aguarde alguns segundos.";
+                statusBox.innerHTML = "API offline. Run <code>start.bat</code> and wait a few seconds.";
                 apiBadge.textContent = "API offline";
                 return false;
             }
@@ -395,14 +396,14 @@
             const text = textField.value.trim();
             if (!text) {
                 statusBox.className = "status bad";
-                statusBox.textContent = "Digite um texto antes de gerar.";
+                statusBox.textContent = "Enter text before generating.";
                 return;
             }
 
             generateBtn.disabled = true;
-            generateBtn.textContent = "Gerando...";
+            generateBtn.textContent = "Generating...";
             statusBox.className = "status warn";
-            statusBox.textContent = "Gerando audio...";
+            statusBox.textContent = "Generating audio...";
 
             const formData = new FormData();
             formData.set("text", text);
@@ -440,17 +441,17 @@
 
                 downloadBtn.href = currentAudioUrl;
                 downloadBtn.download = outputFile;
-                resultMeta.innerHTML = `Arquivo: <code>${outputFile}</code><br>Perfil: <code>${profile}</code> | Voz: <code>${voice}</code> | Formato: <code>${format}</code> | Tempo: <code>${generationTime}</code>`;
+                resultMeta.innerHTML = `File: <code>${outputFile}</code><br>Profile: <code>${profile}</code> | Voice: <code>${voice}</code> | Format: <code>${format}</code> | Time: <code>${generationTime}</code>`;
                 playerPanel.classList.add("active");
 
                 statusBox.className = "status ok";
-                statusBox.textContent = "Audio gerado com sucesso.";
+                statusBox.textContent = "Audio generated successfully.";
             } catch (error) {
                 statusBox.className = "status bad";
-                statusBox.textContent = `Falha ao gerar audio: ${error.message}`;
+                statusBox.textContent = `Failed to generate audio: ${error.message}`;
             } finally {
                 generateBtn.disabled = false;
-                generateBtn.textContent = "Gerar audio";
+                generateBtn.textContent = "Generate Audio";
             }
         });
 
