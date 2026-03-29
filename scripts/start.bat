@@ -13,20 +13,19 @@ echo ========================================================
 echo   Edge TTS Portable
 echo ========================================================
 
-if not exist "%PYTHON_EXE%" goto :run_setup
-if not exist "%CD%\bin\ffmpeg.exe" goto :run_setup
+if not exist "%PYTHON_EXE%" goto :missing_setup
+if not exist "%CD%\bin\ffmpeg.exe" goto :missing_setup
 
 goto :skip_setup
 
-:run_setup
-echo [0/3] Configurando ambiente portatil pela primeira vez...
-echo Isso pode demorar alguns minutos dependendo da sua internet.
-powershell -NoProfile -ExecutionPolicy Bypass -File "%CD%\scripts\setup.ps1"
-if errorlevel 1 (
-    echo [ERRO] Falha ao configurar o ambiente.
-    pause
-    exit /b 1
-)
+:missing_setup
+echo [ERRO] Ambiente nao configurado ou arquivos ausentes!
+echo.
+echo Por favor, feche esta janela e execute o arquivo "Instalar.bat"
+echo para baixar os requisitos (Python e FFmpeg) automaticamente.
+pause
+exit /b 1
+
 :skip_setup
 
 :: Adicionar bin ao PATH para o FFmpeg
