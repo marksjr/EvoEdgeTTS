@@ -15,7 +15,7 @@ import uvicorn
 from fastapi import FastAPI, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydub import AudioSegment
 
 HOST = "127.0.0.1"
@@ -66,12 +66,32 @@ SUPPORTED_FORMATS = {"mp3", "wav"}
 
 
 class HealthResponse(BaseModel):
-    status: str
-    service: str
-    version: str
-    engine: str
-    host: str
-    port: int
+    status: str = Field(description="Current API status.")
+    service: str = Field(description="Service display name.")
+    version: str = Field(description="API version.")
+    engine: str = Field(description="Speech engine used by the service.")
+    host: str = Field(description="Host address used by the local API.")
+    port: int = Field(description="Port used by the local API.")
+
+
+app = FastAPI(
+    title="Evo Edge TTS API",
+    version="3.0.0",
+    summary="Portable local text-to-speech API powered by Edge TTS.",
+    description=(
+        "Evo Edge TTS exposes a local FastAPI server for text-to-speech generation. "
+        "It provides a browser interface, a simple health endpoint, a list of supported voices, "
+        "ready-to-use voice profiles, and audio generation in MP3 or WAV format."
+    ),
+    contact={"name": "Evo Edge TTS"},
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 async def list_edge_voices():
@@ -169,17 +189,12 @@ def save_output(audio_bytes: bytes, text: str, output_format: str) -> str:
     return output_filename
 
 
-app = FastAPI(title="Evo Edge TTS API", version="3.0.0")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+@app.get(
+    "/",
+    tags=["System"],
+    summary="Get API overview",
+    description="Returns a small summary of the local service, available endpoints, and documentation URL.",
 )
-
-
-@app.get("/")
 def root():
     return JSONResponse(
         {
@@ -199,7 +214,13 @@ def root():
     )
 
 
-@app.get("/health", response_model=HealthResponse)
+@app.get(
+    "/health",
+    response_model=HealthResponse,
+    tags=["System"],
+    summary="Check API health",
+    description="Returns the current status, version, engine, host, and port of the local API.",
+)
 def health():
     return HealthResponse(
         status="ok",
@@ -211,50 +232,93 @@ def health():
     )
 
 
-@app.get("/models")
+@app.get(
+    "/models",
+    tags=["Legacy"],
+    summary="Legacy placeholder for model listing",
+    description="Reserved endpoint kept for compatibility. It currently returns an empty list.",
+)
 def list_models():
     return []
 
 
-@app.get("/references")
+@app.get(
+    "/references",
+    tags=["Legacy"],
+    summary="Legacy placeholder for reference listing",
+    description="Reserved endpoint kept for compatibility. It currently returns an empty list.",
+)
 def list_references():
     return []
 
 
-@app.post("/tts")
+@app.post(
+    "/tts",
+    tags=["Legacy"],
+    summary="Legacy TTS endpoint",
+    description="Deprecated endpoint kept for compatibility. Use POST /edge-tts instead.",
+)
 async def text_to_speech_disabled():
     raise HTTPException(status_code=410, detail="Legacy F5-TTS support was removed. Use /edge-tts.")
 
 
-@app.post("/tts/json")
+@app.post(
+    "/tts/json",
+    tags=["Legacy"],
+    summary="Legacy JSON TTS endpoint",
+    description="Deprecated endpoint kept for compatibility. Use POST /edge-tts instead.",
+)
 async def text_to_speech_json_disabled():
     raise HTTPException(status_code=410, detail="Legacy F5-TTS support was removed. Use /edge-tts.")
 
 
-@app.post("/upload-reference")
+@app.post(
+    "/upload-reference",
+    tags=["Legacy"],
+    summary="Legacy reference upload endpoint",
+    description="Deprecated endpoint kept for compatibility. Reference upload is no longer supported.",
+)
 async def upload_reference_disabled():
     raise HTTPException(status_code=410, detail="Reference upload was removed with F5-TTS.")
 
 
-@app.get("/edge-tts/voices")
+@app.get(
+    "/edge-tts/voices",
+    tags=["Voices"],
+    summary="List available voices",
+    description="Returns the filtered Edge TTS voices supported by this portable app.",
+)
 async def edge_tts_voices():
     return await list_edge_voices()
 
 
-@app.get("/edge-tts/profiles")
+@app.get(
+    "/edge-tts/profiles",
+    tags=["Voices"],
+    summary="List voice profiles",
+    description="Returns the ready-to-use voice profiles that adjust speed, pitch, and volume.",
+)
 def edge_tts_profiles():
     return [{"id": key, **value} for key, value in VOICE_PROFILES.items()]
 
 
-@app.post("/edge-tts")
+@app.post(
+    "/edge-tts",
+    tags=["Generation"],
+    summary="Generate speech audio",
+    description=(
+        "Generates speech using the selected Edge TTS voice and returns the audio stream. "
+        "The generated file is also saved locally in the output folder."
+    ),
+)
 async def edge_tts_generate(
-    text: str = Form(...),
-    voice: str = Form(default="pt-BR-FranciscaNeural"),
-    speed: str = Form(default="+0%"),
-    pitch: str = Form(default="+0Hz"),
-    volume: str = Form(default="+0%"),
-    profile: str = Form(default="default"),
-    output_format: str = Form(default="mp3"),
+    text: str = Form(..., description="Text to convert into speech."),
+    voice: str = Form(default="pt-BR-FranciscaNeural", description="Edge TTS voice ID to use for synthesis."),
+    speed: str = Form(default="+0%", description="Speech rate adjustment, for example +0%, -10%, or +25%."),
+    pitch: str = Form(default="+0Hz", description="Pitch adjustment, for example +0Hz, -5Hz, or +10Hz."),
+    volume: str = Form(default="+0%", description="Volume adjustment, for example +0%, -10%, or +10%."),
+    profile: str = Form(default="default", description="Optional profile ID that overrides speed, pitch, and volume."),
+    output_format: str = Form(default="mp3", description="Output audio format. Supported values: mp3, wav."),
 ):
     clean_text = text.strip()
     if not clean_text:
