@@ -75,7 +75,7 @@
             color: var(--muted);
             font-size: 0.93rem;
         }
-        textarea, select {
+        textarea, select, input {
             width: 100%;
             border: 1px solid var(--line);
             background: rgba(5, 14, 27, 0.92);
@@ -171,6 +171,10 @@
                             <select id="profile" name="profile"></select>
                         </div>
                         <div>
+                            <label for="language">Language</label>
+                            <select id="language" name="language"></select>
+                        </div>
+                        <div>
                             <label for="voice">Voice</label>
                             <select id="voice" name="voice"></select>
                         </div>
@@ -238,6 +242,7 @@
     <script>
         const apiBase = "http://127.0.0.1:8890";
         const profileSelect = document.getElementById("profile");
+        const languageSelect = document.getElementById("language");
         const voiceSelect = document.getElementById("voice");
         const textField = document.getElementById("text");
         const generateBtn = document.getElementById("generateBtn");
@@ -357,6 +362,7 @@
 
         let currentAudioUrl = null;
         let profiles = fallbackProfiles;
+        let allVoices = fallbackVoices;
 
         function friendlyVoiceLabel(item) {
             const localeParts = (item.locale || "").split("-");
@@ -379,7 +385,37 @@
             });
         }
 
-        function fillVoices(items) {
+        function languageLabelFromLocale(locale) {
+            const localeParts = (locale || "").split("-");
+            const languageCode = localeParts[0] || "";
+            const countryCode = localeParts[1] || "";
+            const languageName = languageNames[languageCode] || languageCode || "Language";
+            const countryName = countryNames[countryCode] || countryCode || "Region";
+            return `${languageName} - ${countryName}`;
+        }
+
+        function fillLanguages(items) {
+            languageSelect.innerHTML = "";
+
+            const allOption = document.createElement("option");
+            allOption.value = "all";
+            allOption.textContent = "All Languages";
+            languageSelect.appendChild(allOption);
+
+            const seenLocales = new Set();
+            items.forEach((item) => {
+                if (!item.locale || seenLocales.has(item.locale)) {
+                    return;
+                }
+                seenLocales.add(item.locale);
+                const option = document.createElement("option");
+                option.value = item.locale;
+                option.textContent = languageLabelFromLocale(item.locale);
+                languageSelect.appendChild(option);
+            });
+        }
+
+        function fillVoices(items, selectedVoice = "") {
             voiceSelect.innerHTML = "";
             const seen = new Set();
             items.forEach((item) => {
@@ -390,8 +426,23 @@
                 const option = document.createElement("option");
                 option.value = item.name;
                 option.textContent = friendlyVoiceLabel(item);
+                if (selectedVoice && item.name === selectedVoice) {
+                    option.selected = true;
+                }
                 voiceSelect.appendChild(option);
             });
+        }
+
+        function renderVoiceOptions() {
+            const currentVoice = voiceSelect.value;
+            const selectedLocale = languageSelect.value || "all";
+            const filteredVoices = allVoices.filter((item) => selectedLocale === "all" || item.locale === selectedLocale);
+
+            fillVoices(filteredVoices, currentVoice);
+
+            if (!voiceSelect.value && voiceSelect.options.length > 0) {
+                voiceSelect.selectedIndex = 0;
+            }
         }
 
         function applyProfile(id) {
@@ -437,12 +488,15 @@
             await checkApi();
             profiles = await fetchJson("/edge-tts/profiles", fallbackProfiles);
             const voices = await fetchJson("/edge-tts/voices", fallbackVoices);
+            allVoices = voices;
             fillProfiles(profiles);
-            fillVoices(voices);
+            fillLanguages(allVoices);
+            renderVoiceOptions();
             applyProfile(profileSelect.value || "default");
         }
 
         profileSelect.addEventListener("change", () => applyProfile(profileSelect.value));
+        languageSelect.addEventListener("change", () => renderVoiceOptions());
 
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -512,6 +566,11 @@
     </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
