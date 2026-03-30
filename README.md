@@ -35,6 +35,11 @@ Evo Edge TTS is currently configured to expose voices from these language groups
 - French (`fr-*`)
 - German (`de-*`)
 - Japanese (`ja-*`)
+- Norwegian (`no-*`)
+- Swedish (`sv-*`)
+- Danish (`da-*`)
+- Dutch (`nl-*`)
+- Arabic (`ar-*`)
 
 Common examples included in the fallback list are:
 
@@ -44,6 +49,11 @@ Common examples included in the fallback list are:
 - French (France)
 - German (Germany)
 - Japanese (Japan)
+- Norwegian (Norway)
+- Swedish (Sweden)
+- Danish (Denmark)
+- Dutch (Netherlands)
+- Arabic
 
 Important note:
 
@@ -269,3 +279,4 @@ If you want to generate a new distributable ZIP:
 ## Legal Note
 
 This project is not affiliated with or endorsed by Microsoft. Voice generation depends on Microsoft Edge TTS services.
+

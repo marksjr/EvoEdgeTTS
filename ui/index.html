@@ -269,26 +269,104 @@
             { name: "de-DE-KatjaNeural", gender: "Female", locale: "de-DE" },
             { name: "de-DE-ConradNeural", gender: "Male", locale: "de-DE" },
             { name: "ja-JP-NanamiNeural", gender: "Female", locale: "ja-JP" },
-            { name: "ja-JP-KeitaNeural", gender: "Male", locale: "ja-JP" }
+            { name: "ja-JP-KeitaNeural", gender: "Male", locale: "ja-JP" },
+            { name: "no-NO-FinnNeural", gender: "Male", locale: "no-NO" },
+            { name: "no-NO-PernilleNeural", gender: "Female", locale: "no-NO" },
+            { name: "sv-SE-MattiasNeural", gender: "Male", locale: "sv-SE" },
+            { name: "sv-SE-SofieNeural", gender: "Female", locale: "sv-SE" },
+            { name: "da-DK-ChristelNeural", gender: "Female", locale: "da-DK" },
+            { name: "da-DK-JeppeNeural", gender: "Male", locale: "da-DK" },
+            { name: "nl-NL-ColetteNeural", gender: "Female", locale: "nl-NL" },
+            { name: "nl-NL-MaartenNeural", gender: "Male", locale: "nl-NL" },
+            { name: "ar-SA-HamedNeural", gender: "Male", locale: "ar-SA" },
+            { name: "ar-SA-ZariyahNeural", gender: "Female", locale: "ar-SA" }
         ];
 
-        const localeDisplayNames = {
-            "pt-BR": "Portuguese (Brazil)",
-            "en-US": "English (US)",
-            "es-ES": "Spanish (Spain)",
-            "fr-FR": "French (France)",
-            "de-DE": "German (Germany)",
-            "ja-JP": "Japanese (Japan)"
+        const languageNames = {
+            "en": "English",
+            "pt": "Portuguese",
+            "es": "Spanish",
+            "fr": "French",
+            "de": "German",
+            "ja": "Japanese",
+            "no": "Norwegian",
+            "sv": "Swedish",
+            "da": "Danish",
+            "nl": "Dutch",
+            "ar": "Arabic"
+        };
+
+        const countryNames = {
+            "US": "United States",
+            "GB": "United Kingdom",
+            "AU": "Australia",
+            "CA": "Canada",
+            "IN": "India",
+            "IE": "Ireland",
+            "NZ": "New Zealand",
+            "ZA": "South Africa",
+            "BR": "Brazil",
+            "PT": "Portugal",
+            "MX": "Mexico",
+            "AR": "Argentina",
+            "BO": "Bolivia",
+            "CL": "Chile",
+            "CO": "Colombia",
+            "CR": "Costa Rica",
+            "CU": "Cuba",
+            "DO": "Dominican Republic",
+            "EC": "Ecuador",
+            "GQ": "Equatorial Guinea",
+            "GT": "Guatemala",
+            "HN": "Honduras",
+            "NI": "Nicaragua",
+            "PA": "Panama",
+            "PE": "Peru",
+            "PR": "Puerto Rico",
+            "PY": "Paraguay",
+            "SV": "El Salvador",
+            "UY": "Uruguay",
+            "VE": "Venezuela",
+            "FR": "France",
+            "CH": "Switzerland",
+            "BE": "Belgium",
+            "DE": "Germany",
+            "AT": "Austria",
+            "JP": "Japan",
+            "NO": "Norway",
+            "SE": "Sweden",
+            "DK": "Denmark",
+            "NL": "Netherlands",
+            "SA": "Saudi Arabia",
+            "AE": "United Arab Emirates",
+            "BH": "Bahrain",
+            "DZ": "Algeria",
+            "EG": "Egypt",
+            "IQ": "Iraq",
+            "JO": "Jordan",
+            "KW": "Kuwait",
+            "LB": "Lebanon",
+            "LY": "Libya",
+            "MA": "Morocco",
+            "OM": "Oman",
+            "QA": "Qatar",
+            "SY": "Syria",
+            "TN": "Tunisia",
+            "YE": "Yemen"
         };
 
         let currentAudioUrl = null;
         let profiles = fallbackProfiles;
 
         function friendlyVoiceLabel(item) {
-            const localeLabel = localeDisplayNames[item.locale] || item.locale || "Voice";
-            const shortName = (item.name || "").split("-").pop().replace(/Neural$/, "");
-            const genderLabel = item.gender ? ` - ${item.gender}` : "";
-            return `${localeLabel} - ${shortName}${genderLabel}`;
+            const localeParts = (item.locale || "").split("-");
+            const languageCode = localeParts[0] || "";
+            const countryCode = localeParts[1] || "";
+            const languageName = languageNames[languageCode] || languageCode || "Language";
+            const countryName = countryNames[countryCode] || countryCode || "Region";
+            const speakerName = (item.name || "").replace(`${item.locale}-`, "").replace(/Neural$/, "") || "Voice";
+            const genderName = item.gender || "Unknown";
+            return `${languageName} - ${countryName} - ${speakerName} - ${genderName}`;
         }
 
         function fillProfiles(items) {
@@ -434,3 +512,6 @@
     </script>
 </body>
 </html>
+
+
+

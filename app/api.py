@@ -109,6 +109,16 @@ async def list_edge_voices():
         {"name": "de-DE-ConradNeural", "gender": "Male", "locale": "de-DE"},
         {"name": "ja-JP-NanamiNeural", "gender": "Female", "locale": "ja-JP"},
         {"name": "ja-JP-KeitaNeural", "gender": "Male", "locale": "ja-JP"},
+        {"name": "no-NO-FinnNeural", "gender": "Male", "locale": "no-NO"},
+        {"name": "no-NO-PernilleNeural", "gender": "Female", "locale": "no-NO"},
+        {"name": "sv-SE-MattiasNeural", "gender": "Male", "locale": "sv-SE"},
+        {"name": "sv-SE-SofieNeural", "gender": "Female", "locale": "sv-SE"},
+        {"name": "da-DK-ChristelNeural", "gender": "Female", "locale": "da-DK"},
+        {"name": "da-DK-JeppeNeural", "gender": "Male", "locale": "da-DK"},
+        {"name": "nl-NL-ColetteNeural", "gender": "Female", "locale": "nl-NL"},
+        {"name": "nl-NL-MaartenNeural", "gender": "Male", "locale": "nl-NL"},
+        {"name": "ar-SA-HamedNeural", "gender": "Male", "locale": "ar-SA"},
+        {"name": "ar-SA-ZariyahNeural", "gender": "Female", "locale": "ar-SA"},
     ]
 
     try:
@@ -116,7 +126,7 @@ async def list_edge_voices():
     except Exception:
         return fallback
 
-    supported_langs = ("en-", "de-", "fr-", "ja-", "es-", "pt-")
+    supported_langs = ("en-", "de-", "fr-", "ja-", "es-", "pt-", "no-", "sv-", "da-", "nl-", "ar-")
     target_voices = []
     seen_names = set()
     for voice in voices:
